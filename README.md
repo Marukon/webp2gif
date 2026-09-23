@@ -71,10 +71,16 @@ cd webp2gif
 
 # 编译 Release 版本
 ./gradlew :app:assembleRelease
+
+# 检查项目依赖版本更新 (AGP, Gradle, AndroidX, 第三方库)
+./gradlew dependencyUpdates
 ```
 
 编译生成的 APK 位于：
 - `app/build/outputs/apk/release/`
+
+依赖版本检查报告位于：
+- `build/dependencyUpdates/report.txt` (亦可通过 GitHub Actions 自动检查并在工作流摘要与 Telegram 中查看)
 
 ---
 

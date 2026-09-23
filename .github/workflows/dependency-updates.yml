@@ -1,0 +1,84 @@
+name: Dependency Updates Check
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'gradle/**'
+      - '**/build.gradle.kts'
+      - '**/settings.gradle.kts'
+      - '**/libs.versions.toml'
+  schedule:
+    - cron: '0 2 * * 1' # 每周一 UTC 02:00 (北京时间 10:00) 自动执行
+  workflow_dispatch:
+
+jobs:
+  check-dependencies:
+    name: Check Dependency Updates
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Run Dependency Updates Check
+        run: ./gradlew dependencyUpdates --no-daemon
+
+      - name: Display & Summarize Report
+        if: always()
+        run: |
+          REPORT_FILE="build/dependencyUpdates/report.txt"
+          if [ -f "$REPORT_FILE" ]; then
+            echo "### 📦 Dependency Updates Report" >> $GITHUB_STEP_SUMMARY
+            echo '```text' >> $GITHUB_STEP_SUMMARY
+            cat "$REPORT_FILE" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat "$REPORT_FILE"
+          else
+            echo "No report file found at $REPORT_FILE"
+          fi
+
+      - name: Upload Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-updates-report
+          path: build/dependencyUpdates/
+          if-no-files-found: ignore
+
+      - name: Upload Report to Telegram
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "::warning::TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is missing. Skipping telegram upload."
+            exit 0
+          fi
+
+          REPORT_FILE="build/dependencyUpdates/report.txt"
+          if [ -f "$REPORT_FILE" ]; then
+            curl -s -S -f -F document=@"$REPORT_FILE" \
+                 -F chat_id="$TELEGRAM_CHAT_ID" \
+                 "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendDocument" \
+                 -F caption="🔍 *webp2gif* 依赖版本检查报告已生成！" \
+                 -F parse_mode="Markdown" > /dev/null
+            echo "✅ Successfully uploaded dependency report to Telegram."
+          fi
