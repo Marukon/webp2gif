@@ -1,17 +1,6 @@
 name: Dependency Updates Check
 
 on:
-  push:
-    branches:
-      - main
-      - master
-    paths:
-      - 'gradle/**'
-      - '**/build.gradle.kts'
-      - '**/settings.gradle.kts'
-      - '**/libs.versions.toml'
-  schedule:
-    - cron: '0 2 * * 1' # 每周一 UTC 02:00 (北京时间 10:00) 自动执行
   workflow_dispatch:
 
 jobs:

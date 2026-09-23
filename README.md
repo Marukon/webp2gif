@@ -80,7 +80,7 @@ cd webp2gif
 - `app/build/outputs/apk/release/`
 
 依赖版本检查报告位于：
-- `build/dependencyUpdates/report.txt` (亦可通过 GitHub Actions 自动检查并在工作流摘要与 Telegram 中查看)
+- `build/dependencyUpdates/report.txt` (亦可通过 GitHub Actions 页面手动一键触发检查并在工作流摘要与 Telegram 中查看)
 
 ---
 
