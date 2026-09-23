@@ -1,0 +1,6 @@
+{
+  "name": "布布表情包转换器",
+  "description": "一款超萌的布布表情包动图WebP转GIF转换器，支持本地保存与快速分享。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

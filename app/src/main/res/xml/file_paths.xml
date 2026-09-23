@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Allow sharing files inside context.cacheDir where converted GIFs are temporarily written -->
+    <cache-path name="cache_files" path="." />
+    <!-- Allow external media paths as fallback -->
+    <external-path name="external_files" path="." />
+</paths>
