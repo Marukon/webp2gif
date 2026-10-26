@@ -43,14 +43,6 @@ jobs:
             echo "No report file found at $REPORT_FILE"
           fi
 
-      - name: Upload Report Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-updates-report
-          path: build/dependencyUpdates/
-          if-no-files-found: ignore
-
       - name: Upload Report to Telegram
         if: always()
         env:
